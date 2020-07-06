@@ -20,26 +20,31 @@ def index(request):
 def display_entry(request, title):
     entry_title = f"{title}.md"
     _, filenames = default_storage.listdir("entries")
+    # iterate through all files to see if title matches
     for filename in filenames:
-        #print(filename)
         if entry_title == filename:
+            # get content of file
             output = util.get_entry(title)
+            # convert markdown to html
             content_converted = markdown.convert(output)
+            # return entry page
             return render(request, "encyclopedia/entrypage.html", {
             "title": title,
             "content": content_converted
             })
+    # if title does not match any filenames
     return render(request, "encyclopedia/error.html", {
         "message": "Entry not found."
         })
 
 def search(request):
+    # get search query
     query = (request.GET.get('q')).capitalize()
     matches = []
     currentEntries = util.list_entries()
-    #if query.is_valid():
-        #q = query.cleaned_data["q"]
+    # iterate through all entries to find the ones that match
     for currentEntry in currentEntries:
+        # query matches name of the entry
         if currentEntry == query:
             output = util.get_entry(query)
             content_converted = markdown.convert(output)
@@ -47,11 +52,13 @@ def search(request):
                 "title": query,
                 "content": content_converted
             })
+            # query is a substring in the entry
         elif query in currentEntry:
             matches.append(currentEntry)
             return render(request, "encyclopedia/search.html", {
                 "matches": matches
             })
+            # query does not have any match
         else:
             return render(request, "encyclopedia/error.html", {
                 "message": "No such entry."
@@ -62,22 +69,20 @@ def search(request):
 
 def newPage(request):
     if request.method == 'POST':
+        # form for title of entry
         form1 = NewEntryFormTitle(request.POST)
-        #print(form1)
+        # text portion of the entry
         text = request.POST.get("markdown")
         if form1.is_valid():
             title = form1.cleaned_data["title"]
-            #text = form2.cleaned_data["text"]
-            #print(text)
-            #print(title)
-            #print(text)
             currentEntries = util.list_entries()
-            #print(currentEntries)
             for currentEntry in currentEntries:
+                # title for new entry already exists
                 if currentEntry == title:
                     return render(request, "encyclopedia/error.html", {
                         "message": "An entry with this title already exists."
                     })
+            # save new entry
             util.save_entry(title, text)
             output = util.get_entry(title)
             content_converted = markdown.convert(output)
@@ -92,14 +97,15 @@ def newPage(request):
 
 def editPage(request, title):
     if request.method == 'GET':
+        # return current content of entry in textarea
         text = util.get_entry(title)
-        #print(text)
         return render(request, "encyclopedia/editPage.html", {
         "current_entry": text,
         "title": title
         })
     else:
         editedEntry = request.POST.get("editedEntry")
+        # save edited entry
         util.save_entry(title, editedEntry)
         output = util.get_entry(title)
         content_converted = markdown.convert(output)
@@ -110,9 +116,9 @@ def editPage(request, title):
 
 def randomPage(request):
     currentEntries = util.list_entries()
+    # choose a random entry
     randomEntry = random.choice(currentEntries)
     output = util.get_entry(randomEntry)
-    #print(output)
     content_converted = markdown.convert(output)
     return render(request, "encyclopedia/entrypage.html", {
     "title": randomEntry,
