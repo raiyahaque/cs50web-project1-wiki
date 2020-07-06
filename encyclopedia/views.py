@@ -59,13 +59,12 @@ def search(request):
                 "matches": matches
             })
             # query does not have any match
-        else:
-            return render(request, "encyclopedia/error.html", {
-                "message": "No such entry."
-            })
-    return render(request, "encyclopedia/index.html", {
-        "entries": util.list_entries()
+    return render(request, "encyclopedia/error.html", {
+        "message": "No such entry."
     })
+    #return render(request, "encyclopedia/index.html", {
+        #"entries": util.list_entries()
+    #})
 
 def newPage(request):
     if request.method == 'POST':
