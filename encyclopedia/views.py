@@ -58,13 +58,10 @@ def search(request):
             return render(request, "encyclopedia/search.html", {
                 "matches": matches
             })
-            # query does not have any match
+    # query does not have any match
     return render(request, "encyclopedia/error.html", {
         "message": "No such entry."
     })
-    #return render(request, "encyclopedia/index.html", {
-        #"entries": util.list_entries()
-    #})
 
 def newPage(request):
     if request.method == 'POST':
