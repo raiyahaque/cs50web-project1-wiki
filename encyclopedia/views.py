@@ -19,18 +19,17 @@ def index(request):
 
 def display_entry(request, title):
     filenames = util.list_entries()
-    # iterate through all files to see if title matches
-    for filename in filenames:
-        if title == filename:
-            # get content of file
-            output = util.get_entry(title)
-            # convert markdown to html
-            content_converted = markdown.convert(output)
-            # return entry page
-            return render(request, "encyclopedia/entryPage.html", {
+    # check if entry title is in filenames
+    if title in filenames:
+        # get content of file
+        output = util.get_entry(title)
+        # convert markdown to html
+        content_converted = markdown.convert(output)
+        # return entry page
+        return render(request, "encyclopedia/entryPage.html", {
             "title": title,
             "content": content_converted
-            })
+        })
     # if title does not match any filenames
     return render(request, "encyclopedia/error.html", {
         "message": "Entry not found."
@@ -71,12 +70,11 @@ def newPage(request):
         if form1.is_valid():
             title = form1.cleaned_data["title"]
             currentEntries = util.list_entries()
-            for currentEntry in currentEntries:
-                # title for new entry already exists
-                if currentEntry == title:
-                    return render(request, "encyclopedia/error.html", {
-                        "message": "An entry with this title already exists."
-                    })
+            # title for new entry already exists
+            if title in currentEntries:
+                return render(request, "encyclopedia/error.html", {
+                    "message": "An entry with this title already exists."
+                })
             # save new entry
             util.save_entry(title, text)
             output = util.get_entry(title)
