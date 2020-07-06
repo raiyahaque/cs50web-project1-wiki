@@ -9,9 +9,7 @@
     Markdown Content:
       <form action="{% url 'editPage' title=title %}" method="post">
         {% csrf_token %}
-        <textarea name="editedEntry">
-            {{ current_entry }}
-        </textarea>
+        <textarea name="editedEntry">{{ current_entry }}</textarea>
         <br>
           <input type="submit" value="Save">
     </form>
