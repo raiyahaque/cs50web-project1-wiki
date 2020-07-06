@@ -18,17 +18,16 @@ def index(request):
     })
 
 def display_entry(request, title):
-    entry_title = f"{title}.md"
-    _, filenames = default_storage.listdir("entries")
+    filenames = util.list_entries()
     # iterate through all files to see if title matches
     for filename in filenames:
-        if entry_title == filename:
+        if title == filename:
             # get content of file
             output = util.get_entry(title)
             # convert markdown to html
             content_converted = markdown.convert(output)
             # return entry page
-            return render(request, "encyclopedia/entrypage.html", {
+            return render(request, "encyclopedia/entryPage.html", {
             "title": title,
             "content": content_converted
             })
@@ -48,7 +47,7 @@ def search(request):
         if currentEntry == query:
             output = util.get_entry(query)
             content_converted = markdown.convert(output)
-            return render(request, "encyclopedia/entrypage.html", {
+            return render(request, "encyclopedia/entryPage.html", {
                 "title": query,
                 "content": content_converted
             })
@@ -82,7 +81,7 @@ def newPage(request):
             util.save_entry(title, text)
             output = util.get_entry(title)
             content_converted = markdown.convert(output)
-            return render(request, "encyclopedia/entrypage.html", {
+            return render(request, "encyclopedia/entryPage.html", {
                 "title": title,
                 "content": content_converted
             })
@@ -105,7 +104,7 @@ def editPage(request, title):
         util.save_entry(title, editedEntry)
         output = util.get_entry(title)
         content_converted = markdown.convert(output)
-        return render(request, "encyclopedia/entrypage.html", {
+        return render(request, "encyclopedia/entryPage.html", {
             "title": title,
             "content": content_converted
             })
@@ -116,7 +115,7 @@ def randomPage(request):
     randomEntry = random.choice(currentEntries)
     output = util.get_entry(randomEntry)
     content_converted = markdown.convert(output)
-    return render(request, "encyclopedia/entrypage.html", {
+    return render(request, "encyclopedia/entryPage.html", {
     "title": randomEntry,
     "content": content_converted
     })
